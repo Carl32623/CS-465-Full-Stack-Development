@@ -103,15 +103,16 @@ const tripsUpdateTrip = async(req, res) => {
             perPerson: req.body.perPerson,
             image: req.body.image,
             description: req.body.description
-        }
+        },
+        { new: true }
     )
     .exec();
 
     if(!q) {
         //database returned no data
         return res
-            .status(400)
-            .json(err);
+            .status(404)
+            .json({ message: 'Trip not found' });
     } else {
         //return resulting updated trip
         return res

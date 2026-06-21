@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TripCard } from '../trip-card/trip-card';
 import { Trip } from '../models/trip';
 import { TripData } from '../services/trip-data';
+import { AuthenticationService } from '../services/authentication';
 
 import { Router } from '@angular/router';
 
@@ -15,11 +16,20 @@ import { Router } from '@angular/router';
   styleUrl: './trip-listing.css'
 })
 export class TripListing implements OnInit {
-  trips!: Trip[];
+  //trips!: Trip[];
+  trips: Trip[] = [];
   message: string = '';
 
-  constructor(private tripDataService: TripData, private router: Router) {
+  constructor(
+    private tripDataService: TripData, 
+    private authenticationService: AuthenticationService,
+    private router: Router,
+    private cdr: ChangeDetectorRef) {
     console.log('trip-listing constructor');
+  }
+
+  public isLoggedIn(): boolean {
+    return this.authenticationService.isLoggedIn();
   }
 
   public addTrip(): void {
@@ -31,6 +41,7 @@ export class TripListing implements OnInit {
       .subscribe({
         next: (value: any) => {
           this.trips = value;
+          this.cdr.detectChanges();
 
           if (value.length > 0) {
             this.message = 'There are ' + value.length + ' trips available.';

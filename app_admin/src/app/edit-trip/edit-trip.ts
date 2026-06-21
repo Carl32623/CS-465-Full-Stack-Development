@@ -16,6 +16,7 @@ import { Trip } from '../models/trip';
 export class EditTrip implements OnInit {
   public editForm!: FormGroup;
   trip!: Trip;
+  tripCode!: string;
   submitted = false;
   message: string = '';
 
@@ -33,6 +34,7 @@ export class EditTrip implements OnInit {
       this.router.navigate(['']);
       return;
     }
+    this.tripCode = tripCode;
 
     console.log('EditTripComponent::ngOnInit');
     console.log('tripCode: ' + tripCode);
@@ -54,7 +56,11 @@ export class EditTrip implements OnInit {
         next: (value: any) => {
           this.trip = value;
           // Populate our record into the form
-          this.editForm.patchValue(value[0]);
+          const trip = value[0];
+          this.editForm.patchValue({
+            ...trip,
+            start: trip.start ? trip.start.substring(0, 10) : ''
+          });
           if (!value) {
             this.message = 'No Trip Retrieved!';
           } else {
@@ -73,7 +79,7 @@ export class EditTrip implements OnInit {
     this.submitted = true;
 
     if (this.editForm.valid) {
-      this.tripDataService.updateTrip(this.editForm.value)
+      this.tripDataService.updateTrip(this.editForm.value, this.tripCode)
         .subscribe({
           next: (value: any) => {
             console.log(value);
